@@ -1,0 +1,6 @@
+Flask>=3.0
+APScheduler>=3.10
+requests>=2.31
+gunicorn>=22.0
+google-api-python-client>=2.120
+google-auth>=2.28
