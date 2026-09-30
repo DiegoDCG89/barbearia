@@ -1,4 +1,4 @@
-"""D.Lourenço Barbearia – site público + ERP + agenda + WhatsApp. Execução: gunicorn -w 1 app:app"""
+"""00 Barbearia – site público + ERP + agenda + WhatsApp. Execução: gunicorn -w 1 app:app"""
 import logging, math, os, re, sqlite3, hmac
 from datetime import datetime, timedelta
 from functools import wraps
@@ -6,8 +6,10 @@ from urllib.parse import quote, urlencode
 from zoneinfo import ZoneInfo
 
 import requests
-from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask, Response, g, jsonify, render_template, request
+from apscheduler.schedulers.background 
+import BackgroundScheduler
+from flask 
+import Flask, Response, g, jsonify, render_template, request
 
 log = logging.getLogger("barbearia")
 logging.basicConfig(level=logging.INFO)
