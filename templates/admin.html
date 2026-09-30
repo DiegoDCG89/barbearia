@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERP – Barbearia</title><meta name="robots" content="noindex">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<header class="bg-gray-900 text-white px-4 py-3 flex justify-between"><strong>ERP · D.Lourenço</strong><a href="/" class="underline">Ver site</a></header>
+<nav class="bg-white border-b flex gap-4 px-4 overflow-x-auto" id="tabs">
+  <button data-t="lembretes" class="py-3">Lembretes <span id="badge" class="bg-red-600 text-white rounded-full px-2 text-xs hidden">0</span></button><button data-t="caixa" class="py-3 font-bold">Caixa</button><button data-t="agenda" class="py-3">Agenda</button>
+  <button data-t="lanc" class="py-3">Gastos / Contas</button><button data-t="estoque" class="py-3">Estoque</button><button data-t="prev" class="py-3">Previsão de compra</button>{% if demo %}<button data-t="wa" class="py-3 text-green-700">WhatsApp (demo)</button>{% endif %}
+</nav>
+<main class="container mx-auto p-4 space-y-4">
+
+<section id="lembretes" hidden><p class="text-sm text-gray-600 mb-2">Clique em <b>Enviar</b> (abre o WhatsApp Business com a mensagem pronta) e depois em <b>Feito</b>. A lista atualiza sozinha a cada minuto.</p><div id="rem"></div></section>
+
+<section id="caixa"><label class="text-sm">Mês <input type="month" id="month" class="border rounded p-1"></label>
+  <div class="grid sm:grid-cols-3 gap-4 my-4" id="cards"></div>
+  <h2 class="font-bold mb-2">Repasse por barbeiro</h2><div id="barbers" class="overflow-x-auto"></div>
+  <h2 class="font-bold my-2">Lançamentos do mês</h2><div id="txs" class="overflow-x-auto"></div></section>
+
+<section id="agenda" hidden><label class="text-sm">Dia <input type="date" id="day" class="border rounded p-1"></label><div id="appts" class="mt-3 overflow-x-auto"></div></section>
+
+<section id="lanc" hidden><form id="txform" class="bg-white p-4 rounded shadow grid sm:grid-cols-5 gap-2">
+  <select name="kind" class="border p-2 rounded"><option value="saida">Gasto / Conta</option><option value="entrada">Receita avulsa</option></select>
+  <select name="category" class="border p-2 rounded"><option>Conta Fixa</option><option>Gasto</option><option>Aluguel</option><option>Energia</option><option>Água</option><option>Internet</option><option>Outros</option></select>
+  <input name="description" placeholder="Descrição" maxlength="120" class="border p-2 rounded">
+  <input name="amount" type="number" step="0.01" min="0.01" placeholder="Valor" required class="border p-2 rounded">
+  <input name="day" type="date" required class="border p-2 rounded">
+  <button class="bg-gray-900 text-white rounded p-2 sm:col-span-5">Lançar</button></form></section>
+
+<section id="estoque" hidden><div id="prods" class="overflow-x-auto"></div>
+  <form id="mvform" class="bg-white p-4 rounded shadow grid sm:grid-cols-5 gap-2 mt-4">
+    <select name="product" id="mvprod" class="border p-2 rounded"></select>
+    <select name="mode" class="border p-2 rounded"><option value="venda">Venda</option><option value="compra">Compra (entrada)</option><option value="consumo">Consumo interno</option></select>
+    <input name="qty" type="number" min="1" placeholder="Qtd" required class="border p-2 rounded">
+    <input name="cost" type="number" step="0.01" min="0" placeholder="Custo total (compra)" class="border p-2 rounded">
+    <button class="bg-gray-900 text-white rounded p-2">Registrar</button></form></section>
+
+<section id="prev" hidden><p class="text-sm text-gray-600 mb-2">Média móvel ponderada das últimas 8 semanas de consumo, horizonte de 30 dias, com 15% de folga.</p><div id="fc" class="overflow-x-auto"></div></section>
+{% if demo %}<section id="wa" hidden>
+  <div class="flex gap-2 mb-3"><button id="seed" class="bg-gray-900 text-white rounded px-3 py-2">1. Criar dados de demonstração</button>
+  <button id="runrem" class="bg-green-600 text-white rounded px-3 py-2">2. Disparar lembretes agora</button></div>
+  <p class="text-sm text-gray-600 mb-2">Modo demonstração: nenhuma mensagem real é enviada. Abaixo, o que o cliente receberia.</p>
+  <div id="chat" class="max-w-md mx-auto bg-[#e5ddd5] rounded-xl p-3 space-y-2 min-h-[200px]"></div></section>{% endif %}
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const brl = v => Number(v).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+const api = async (u, body) => { const r = await fetch(u, body ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)} : {});
+  const j = await r.json(); if (!r.ok) { alert(j.error || 'Erro'); throw 0; } return j; };
+const table = (head, rows) => `<table class="w-full bg-white rounded shadow text-sm"><thead class="bg-gray-200 text-left"><tr>${head.map(h=>`<th class="p-2">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr class="border-t">${r.map(c=>`<td class="p-2">${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+const today = new Date().toLocaleDateString('en-CA');
+$('#month').value = today.slice(0,7); $('#day').value = today; document.querySelector('[name=day]').value = today;
+
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('font-bold', x === b));
+  document.querySelectorAll('main > section').forEach(s => s.hidden = s.id !== b.dataset.t);
+  ({wa: typeof wa==='function'?wa:()=>{}, lembretes, caixa, agenda, lanc:()=>{}, estoque, prev})[b.dataset.t]();
+});
+
+async function caixa() {
+  const d = await api('/api/admin/summary?month=' + $('#month').value);
+  $('#cards').innerHTML = [['Entradas', d.income,'text-green-700'],['Saídas', d.expense,'text-red-600'],['Saldo', d.balance,'']]
+    .map(([t,v,c]) => `<div class="bg-white p-4 rounded shadow"><p class="text-sm text-gray-500">${t}</p><p class="text-2xl font-bold ${c}">${brl(v)}</p></div>`).join('');
+  $('#barbers').innerHTML = table(['Barbeiro','Atendimentos','Bruto','% comissão','A repassar'], d.barbers.map(b => [esc(b.name), b.n, brl(b.gross), b.pct+'%', `<b>${brl(b.commission)}</b>`]));
+  $('#txs').innerHTML = table(['Data','Tipo','Categoria','Descrição','Valor'], d.transactions.map(t => [t.day, t.kind, esc(t.category), esc(t.description), `<span class="${t.kind==='entrada'?'text-green-700':'text-red-600'}">${brl(t.amount)}</span>`]));
+}
+async function agenda() {
+  const d = await api('/api/admin/appointments?day=' + $('#day').value);
+  $('#appts').innerHTML = d.length ? table(['Hora','Cliente','WhatsApp','Barbeiro','Serviço','Status',''], d.map(a => [a.start_at.slice(11), esc(a.client_name), esc(a.phone), esc(a.barber), esc(a.service), a.status,
+    a.status==='agendado' ? `<button data-id="${a.id}" data-s="concluido" class="text-green-700">Concluir</button> · <button data-id="${a.id}" data-s="faltou">Faltou</button> · <button data-id="${a.id}" data-s="cancelado" class="text-red-600">Cancelar</button>` : ''])) : '<p>Sem agendamentos.</p>';
+}
+async function estoque() {
+  const d = await api('/api/admin/products');
+  $('#prods').innerHTML = table(['Item','Tipo','Preço','Estoque'], d.map(p => [esc(p.name), p.for_sale?'Venda':'Material', p.for_sale?brl(p.price):'—', p.stock]));
+  $('#mvprod').innerHTML = d.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
+}
+async function prev() {
+  const d = await api('/api/admin/forecast?days=30');
+  $('#fc').innerHTML = table(['Item','Estoque','Consumo/dia','Dias restantes','Comprar (30 dias)'], d.map(r => [esc(r.product), r.stock, r.daily_rate, r.days_left ?? '—', `<b>${r.buy}</b>`]));
+}
+$('#month').onchange = caixa; $('#day').onchange = agenda;
+$('#appts').onclick = async e => { const b = e.target.closest('button[data-id]'); if (b) { await api(`/api/admin/appointments/${b.dataset.id}/status`, {status:b.dataset.s}); agenda(); } };
+$('#txform').onsubmit = async e => { e.preventDefault(); await api('/api/admin/transactions', Object.fromEntries(new FormData(e.target))); e.target.reset(); alert('Lançado.'); };
+$('#mvform').onsubmit = async e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
+  if (f.mode === 'venda') await api('/api/admin/sales', {product:f.product, qty:f.qty});
+  else await api('/api/admin/stock', {product:f.product, qty: f.mode==='consumo' ? -f.qty : +f.qty, cost:f.cost});
+  e.target.reset(); estoque(); };
+async function lembretes() {
+  const d = await api('/api/admin/reminders');
+  const bd = $('#badge'); bd.textContent = d.length; bd.classList.toggle('hidden', !d.length);
+  $('#rem').innerHTML = d.length ? table(['Tipo','Cliente','Quando','',''], d.map(r => [r.kind==='lembrete'?'1h antes':'Retorno', esc(r.name), r.when,
+    `<a href="${esc(r.link)}" target="_blank" rel="noopener" class="text-green-700 font-bold">Enviar</a>`, `<button data-k="${r.kind}" data-id="${r.id}">Feito</button>`])) : '<p>Nenhum lembrete pendente.</p>';
+}
+$('#rem').onclick = async e => { const b = e.target.closest('button[data-id]'); if (b) { await api('/api/admin/reminders/done', {kind:b.dataset.k, id:+b.dataset.id}); lembretes(); } };
+{% if demo %}
+async function wa() {
+  const d = await api('/api/admin/outbox');
+  $('#chat').innerHTML = d.length ? d.map(m => `<div><div class="text-xs text-gray-600">Para +${esc(m.phone)} · ${esc(m.sent_at)}</div>
+    <div class="bg-[#dcf8c6] rounded-lg p-2 text-sm shadow whitespace-pre-wrap">${esc(m.text)}</div></div>`).join('') : '<p class="text-center text-gray-600">Nenhuma mensagem ainda.</p>';
+}
+$('#seed').onclick = async () => { await api('/api/admin/demo/seed', {}); wa(); lembretes(); };
+$('#runrem').onclick = async () => { await api('/api/admin/demo/run', {}); wa(); lembretes(); };
+{% endif %}
+setInterval(lembretes, 60000); lembretes(); caixa();
+</script>
+</body>
+</html>

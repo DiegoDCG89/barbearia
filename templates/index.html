@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ shop.name }}</title>
+<meta name="description" content="Barbearia em Lorena-SP. Agende online: cortes, barba e produtos.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 scroll-smooth">
+<header class="bg-gray-900 text-white sticky top-0 z-40">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <strong class="text-xl">✂ {{ shop.name }}</strong>
+    <nav class="hidden md:flex gap-6" aria-label="Seções">
+      <a href="#barbeiros">Barbeiros</a><a href="#servicos">Serviços</a><a href="#produtos">Produtos</a><a href="#local">Localização</a>
+    </nav>
+    <button data-open-booking class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold px-4 py-2 rounded">Agendar</button>
+  </div>
+</header>
+
+<main>
+<section class="bg-gray-800 text-white text-center py-16 px-4">
+  <h1 class="text-4xl font-bold mb-3">Tradição e estilo</h1>
+  <p class="text-gray-300">Agende online e receba lembrete no WhatsApp.</p>
+</section>
+
+<section id="barbeiros" class="container mx-auto px-4 py-12">
+  <h2 class="text-2xl font-bold mb-6">Nossos barbeiros</h2>
+  <div id="barbers" class="grid gap-6 sm:grid-cols-3"></div>
+</section>
+
+<section id="servicos" class="bg-white py-12"><div class="container mx-auto px-4">
+  <h2 class="text-2xl font-bold mb-6">Serviços</h2>
+  <div id="services" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"></div>
+</div></section>
+
+<section id="produtos" class="container mx-auto px-4 py-12">
+  <h2 class="text-2xl font-bold mb-6">Produtos</h2>
+  <div id="products" class="grid gap-6 sm:grid-cols-3"></div>
+</section>
+
+<section id="local" class="bg-gray-900 text-white py-12"><div class="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
+  <div>
+    <h2 class="text-3xl font-bold mb-4">Onde estamos</h2>
+    <p class="text-gray-300 mb-6 text-lg">{{ shop.address }}</p>
+    <a id="gps" target="_blank" rel="noopener" class="inline-block bg-green-600 hover:bg-green-700 font-bold py-3 px-6 rounded-lg">📍 Traçar rota no GPS</a>
+  </div>
+  <iframe id="map" title="Mapa da barbearia" class="w-full h-72 rounded-xl border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div></section>
+</main>
+
+<dialog id="dlg" class="rounded-lg p-0 w-full max-w-md backdrop:bg-black/50">
+  <form id="form" class="p-5 space-y-3">
+    <div class="flex justify-between"><h3 class="text-xl font-bold">Agendar horário</h3>
+      <button type="button" id="close" aria-label="Fechar">✕</button></div>
+    <label class="block text-sm">Barbeiro<select id="fb" required class="w-full border rounded p-2"></select></label>
+    <label class="block text-sm">Serviço<select id="fs" required class="w-full border rounded p-2"></select></label>
+    <label class="block text-sm">Data<input id="fd" type="date" required class="w-full border rounded p-2"></label>
+    <div><span class="text-sm">Horário</span><div id="slots" class="grid grid-cols-4 gap-2 mt-1" role="radiogroup"></div></div>
+    <label class="block text-sm">Nome<input id="fn" required maxlength="80" autocomplete="name" class="w-full border rounded p-2"></label>
+    <label class="block text-sm">WhatsApp (com DDD)<input id="fp" required type="tel" inputmode="tel" autocomplete="tel" placeholder="12 99999-9999" class="w-full border rounded p-2"></label>
+    <p id="err" class="text-red-600 text-sm" role="alert"></p>
+    <button class="w-full bg-gray-900 text-white font-bold py-2 rounded">Confirmar agendamento</button>
+  </form>
+  <div id="done" class="p-5 space-y-3 hidden">
+    <h3 class="text-xl font-bold">✅ Agendamento confirmado!</h3>
+    <p>Você receberá um lembrete no WhatsApp 1 hora antes. Deseja adicionar ao seu Google Agenda?</p>
+    <a id="gcal" target="_blank" rel="noopener" class="block text-center bg-blue-600 text-white font-bold py-2 rounded">Adicionar ao Google Agenda</a>
+    <button id="skip" class="w-full border py-2 rounded">Não, obrigado</button>
+  </div>
+</dialog>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const brl = v => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+const ADDR = {{ shop.address|tojson }};
+const q = encodeURIComponent(ADDR);
+let chosen = null;
+
+// Mapa + rota: iOS abre Apple Maps; demais abrem o app de mapas/Google Maps já com a rota a partir da posição atual
+$('#map').src = `https://maps.google.com/maps?q=${q}&output=embed`;
+$('#gps').href = /iPad|iPhone|iPod/.test(navigator.userAgent)
+  ? `https://maps.apple.com/?daddr=${q}&dirflg=d`
+  : `https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=driving`;
+
+fetch('/api/public').then(r => r.json()).then(d => {
+  $('#barbers').innerHTML = d.barbers.map(b => `<article class="bg-white rounded-lg shadow p-6 text-center">
+    <div class="w-24 h-24 mx-auto rounded-full bg-gray-800 text-white text-3xl flex items-center justify-center mb-3">${esc(b.name.split(' ').map(x=>x[0]).slice(0,2).join(''))}</div>
+    <h3 class="font-bold">${esc(b.name)}</h3><p class="text-gray-500">${esc(b.role||'')}</p></article>`).join('');
+  $('#services').innerHTML = d.services.map(s => `<article class="border rounded-lg p-5">
+    <h3 class="font-bold">${esc(s.name)}</h3><p class="text-sm text-gray-500 mb-2">${esc(s.description||'')}</p>
+    <p class="font-bold text-amber-600">${brl(s.price)}</p><p class="text-sm">⏱ ${s.minutes} min</p></article>`).join('');
+  $('#products').innerHTML = d.products.map(p => `<article class="bg-white rounded-lg shadow p-5">
+    <h3 class="font-bold">${esc(p.name)}</h3><p class="text-amber-600 font-bold">${brl(p.price)}</p>
+    <p class="text-sm ${p.stock>0?'text-green-700':'text-red-600'}">${p.stock>0?'Disponível':'Esgotado'}</p></article>`).join('');
+  $('#fb').innerHTML = d.barbers.map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join('');
+  $('#fs').innerHTML = d.services.map(s => `<option value="${s.id}">${esc(s.name)} – ${brl(s.price)} (${s.minutes} min)</option>`).join('');
+});
+
+async function loadSlots() {
+  chosen = null; const box = $('#slots'); box.innerHTML = '';
+  if (!$('#fd').value) return;
+  const r = await fetch(`/api/slots?barber=${$('#fb').value}&service=${$('#fs').value}&date=${$('#fd').value}`);
+  const list = await r.json();
+  box.innerHTML = list.length ? list.map(t => `<button type="button" role="radio" aria-checked="false" data-t="${t}" class="border rounded py-1 text-sm">${t}</button>`).join('')
+    : '<p class="col-span-4 text-sm text-gray-500">Sem horários livres neste dia.</p>';
+}
+$('#slots').addEventListener('click', e => {
+  const b = e.target.closest('button[data-t]'); if (!b) return;
+  chosen = b.dataset.t;
+  document.querySelectorAll('#slots button').forEach(x => { const on = x === b; x.setAttribute('aria-checked', on); x.classList.toggle('bg-gray-900', on); x.classList.toggle('text-white', on); });
+});
+['#fb','#fs','#fd'].forEach(s => $(s).addEventListener('change', loadSlots));
+document.querySelectorAll('[data-open-booking]').forEach(b => b.addEventListener('click', () => {
+  $('#form').classList.remove('hidden'); $('#done').classList.add('hidden');
+  const t = new Date(); $('#fd').min = $('#fd').value = t.toLocaleDateString('en-CA'); loadSlots(); $('#dlg').showModal();
+}));
+$('#close').onclick = $('#skip').onclick = () => $('#dlg').close();
+$('#form').addEventListener('submit', async e => {
+  e.preventDefault(); $('#err').textContent = '';
+  if (!chosen) { $('#err').textContent = 'Escolha um horário.'; return; }
+  const r = await fetch('/api/appointments', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
+    barber:$('#fb').value, service:$('#fs').value, date:$('#fd').value, time:chosen, name:$('#fn').value, phone:$('#fp').value})});
+  const j = await r.json();
+  if (!r.ok) { $('#err').textContent = j.error || 'Erro ao agendar.'; loadSlots(); return; }
+  $('#gcal').href = j.google_link; $('#form').classList.add('hidden'); $('#done').classList.remove('hidden');
+});
+</script>
+</body>
+</html>
