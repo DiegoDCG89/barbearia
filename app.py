@@ -6,7 +6,7 @@ from urllib.parse import quote, urlencode
 from zoneinfo import ZoneInfo
 
 import requests
-from apscheduler.schedulers.background 
+from apscheduler.schedulers.background import BackgroundScheduler
 import BackgroundScheduler
 from flask 
 import Flask, Response, g, jsonify, render_template, request
