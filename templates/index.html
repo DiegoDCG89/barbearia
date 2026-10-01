@@ -6,67 +6,161 @@
 <title>{{ shop.name }}</title>
 <meta name="description" content="Barbearia em Lorena-SP. Agende online: cortes, barba e produtos.">
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- Adição de Tipografia Premium -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  /* Esconder barra de rolagem mas manter funcionalidade nas secções horizontais */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
 </head>
-<body class="bg-gray-100 text-gray-800 scroll-smooth">
-<header class="bg-gray-900 text-white sticky top-0 z-40">
-  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-    <strong class="text-xl">✂ {{ shop.name }}</strong>
-    <nav class="hidden md:flex gap-6" aria-label="Seções">
-      <a href="#barbeiros">Barbeiros</a><a href="#servicos">Serviços</a><a href="#produtos">Produtos</a><a href="#local">Localização</a>
+<body class="bg-gray-50 text-gray-800 scroll-smooth selection:bg-amber-500 selection:text-white">
+
+<!-- Cabeçalho (Header) Fixo e Elegante -->
+<header class="bg-gray-900/95 backdrop-blur-md text-white sticky top-0 z-50 border-b border-gray-800">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <strong class="text-2xl font-extrabold tracking-tight text-white">
+      <span class="text-amber-500">D.</span>Lourenço
+    </strong>
+    <nav class="hidden md:flex gap-8 text-sm font-semibold text-gray-300" aria-label="Seções">
+      <a href="#barbeiros" class="hover:text-amber-400 transition-colors">A Equipa</a>
+      <a href="#servicos" class="hover:text-amber-400 transition-colors">Serviços</a>
+      <a href="#produtos" class="hover:text-amber-400 transition-colors">Produtos</a>
+      <a href="#local" class="hover:text-amber-400 transition-colors">Localização</a>
     </nav>
-    <button data-open-booking class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold px-4 py-2 rounded">Agendar</button>
+    <button data-open-booking class="bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold px-5 py-2 rounded-full transition-transform transform hover:scale-105 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+      Agendar
+    </button>
   </div>
 </header>
 
 <main>
-<section class="bg-gray-800 text-white text-center py-16 px-4">
-  <h1 class="text-4xl font-bold mb-3">Tradição e estilo</h1>
-  <p class="text-gray-300">Agende online e receba lembrete no WhatsApp.</p>
-</section>
-
-<section id="barbeiros" class="container mx-auto px-4 py-12">
-  <h2 class="text-2xl font-bold mb-6">Nossos barbeiros</h2>
-  <div id="barbers" class="grid gap-6 sm:grid-cols-3"></div>
-</section>
-
-<section id="servicos" class="bg-white py-12"><div class="container mx-auto px-4">
-  <h2 class="text-2xl font-bold mb-6">Serviços</h2>
-  <div id="services" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"></div>
-</div></section>
-
-<section id="produtos" class="container mx-auto px-4 py-12">
-  <h2 class="text-2xl font-bold mb-6">Produtos</h2>
-  <div id="products" class="grid gap-6 sm:grid-cols-3"></div>
-</section>
-
-<section id="local" class="bg-gray-900 text-white py-12"><div class="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
-  <div>
-    <h2 class="text-3xl font-bold mb-4">Onde estamos</h2>
-    <p class="text-gray-300 mb-6 text-lg">{{ shop.address }}</p>
-    <a id="gps" target="_blank" rel="noopener" class="inline-block bg-green-600 hover:bg-green-700 font-bold py-3 px-6 rounded-lg">📍 Traçar rota no GPS</a>
+<!-- Hero Section (Destaque Principal) -->
+<section class="relative bg-gray-900 text-white text-center py-32 px-4 overflow-hidden">
+  <!-- Imagem de fundo genérica de barbearia (Unsplash) -->
+  <div class="absolute inset-0 z-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center"></div>
+  <div class="absolute inset-0 z-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
+  
+  <div class="relative z-10 max-w-3xl mx-auto flex flex-col items-center">
+    <span class="text-amber-500 font-semibold tracking-widest uppercase text-sm mb-4">Tradição & Estilo</span>
+    <h1 class="text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight">A sua melhor versão <br>começa <span class="text-amber-500">aqui.</span></h1>
+    <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-xl">Agende o seu horário online e deixe que nós tratamos do resto. Receberá um lembrete no seu WhatsApp.</p>
+    <button data-open-booking class="bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold px-8 py-4 rounded-full text-lg transition-all transform hover:scale-105 hover:shadow-[0_0_25px_rgba(245,158,11,0.5)] flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+      Agendar Horário Agora
+    </button>
   </div>
-  <iframe id="map" title="Mapa da barbearia" class="w-full h-72 rounded-xl border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-</div></section>
+</section>
+
+<!-- Secção Barbeiros -->
+<section id="barbeiros" class="container mx-auto px-6 py-20">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl font-bold text-gray-900">Os Nossos Mestres</h2>
+    <div class="h-1 w-20 bg-amber-500 mx-auto mt-4 rounded-full"></div>
+  </div>
+  <div id="barbers" class="grid gap-8 sm:grid-cols-3 max-w-5xl mx-auto"></div>
+</section>
+
+<!-- Secção Serviços -->
+<section id="servicos" class="bg-white py-20 border-y border-gray-200">
+  <div class="container mx-auto px-6">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900">Serviços & Preços</h2>
+      <div class="h-1 w-20 bg-amber-500 mx-auto mt-4 rounded-full"></div>
+    </div>
+    <div id="services" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto"></div>
+  </div>
+</section>
+
+<!-- Secção Produtos -->
+<section id="produtos" class="container mx-auto px-6 py-20">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl font-bold text-gray-900">Cuidados em Casa</h2>
+    <div class="h-1 w-20 bg-amber-500 mx-auto mt-4 rounded-full"></div>
+  </div>
+  <div id="products" class="grid gap-8 sm:grid-cols-3 max-w-5xl mx-auto"></div>
+</section>
+
+<!-- Secção Localização -->
+<section id="local" class="bg-gray-900 text-white py-20 relative overflow-hidden">
+  <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+  <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10 max-w-6xl">
+    <div>
+      <span class="text-amber-500 font-semibold tracking-widest uppercase text-sm mb-2 block">Visite-nos</span>
+      <h2 class="text-4xl font-bold mb-6">Onde estamos</h2>
+      <p class="text-gray-300 mb-8 text-lg flex items-start gap-3">
+        <svg class="w-6 h-6 text-amber-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        {{ shop.address }}
+      </p>
+      <a id="gps" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold py-3 px-8 rounded-full transition-transform transform hover:scale-105 shadow-lg">
+        Traçar rota no GPS
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+      </a>
+    </div>
+    <div class="relative p-2 bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+      <iframe id="map" title="Mapa da barbearia" class="w-full h-80 rounded-xl border-0 grayscale hover:grayscale-0 transition-all duration-500" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>
 </main>
 
-<dialog id="dlg" class="rounded-lg p-0 w-full max-w-md backdrop:bg-black/50">
-  <form id="form" class="p-5 space-y-3">
-    <div class="flex justify-between"><h3 class="text-xl font-bold">Agendar horário</h3>
-      <button type="button" id="close" aria-label="Fechar">✕</button></div>
-    <label class="block text-sm">Barbeiro<select id="fb" required class="w-full border rounded p-2"></select></label>
-    <label class="block text-sm">Serviço<select id="fs" required class="w-full border rounded p-2"></select></label>
-    <label class="block text-sm">Data<input id="fd" type="date" required class="w-full border rounded p-2"></label>
-    <div><span class="text-sm">Horário</span><div id="slots" class="grid grid-cols-4 gap-2 mt-1" role="radiogroup"></div></div>
-    <label class="block text-sm">Nome<input id="fn" required maxlength="80" autocomplete="name" class="w-full border rounded p-2"></label>
-    <label class="block text-sm">WhatsApp (com DDD)<input id="fp" required type="tel" inputmode="tel" autocomplete="tel" placeholder="12 99999-9999" class="w-full border rounded p-2"></label>
-    <p id="err" class="text-red-600 text-sm" role="alert"></p>
-    <button class="w-full bg-gray-900 text-white font-bold py-2 rounded">Confirmar agendamento</button>
+<!-- Modal de Agendamento Modernizado -->
+<dialog id="dlg" class="rounded-2xl p-0 w-full max-w-lg backdrop:bg-gray-900/80 backdrop-blur-sm shadow-2xl border border-gray-100">
+  <form id="form" class="p-8 space-y-5">
+    <div class="flex justify-between items-center border-b pb-4 mb-4">
+      <h3 class="text-2xl font-bold text-gray-900">Agendar horário</h3>
+      <button type="button" id="close" aria-label="Fechar" class="text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors">✕</button>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-4">
+      <label class="block text-sm font-semibold text-gray-700 col-span-2 sm:col-span-1">Profissional
+        <select id="fb" required class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:border-amber-500 focus:ring-amber-500 bg-gray-50 p-2.5"></select>
+      </label>
+      <label class="block text-sm font-semibold text-gray-700 col-span-2 sm:col-span-1">Serviço
+        <select id="fs" required class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:border-amber-500 focus:ring-amber-500 bg-gray-50 p-2.5"></select>
+      </label>
+    </div>
+
+    <label class="block text-sm font-semibold text-gray-700">Data
+      <input id="fd" type="date" required class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:border-amber-500 focus:ring-amber-500 bg-gray-50 p-2.5">
+    </label>
+    
+    <div>
+      <span class="text-sm font-semibold text-gray-700 block mb-2">Horários Disponíveis</span>
+      <div id="slots" class="grid grid-cols-4 gap-2" role="radiogroup"></div>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-4">
+      <label class="block text-sm font-semibold text-gray-700 col-span-2 sm:col-span-1">O seu Nome
+        <input id="fn" required maxlength="80" autocomplete="name" placeholder="Ex: João Silva" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:border-amber-500 focus:ring-amber-500 bg-gray-50 p-2.5">
+      </label>
+      <label class="block text-sm font-semibold text-gray-700 col-span-2 sm:col-span-1">WhatsApp
+        <input id="fp" required type="tel" inputmode="tel" autocomplete="tel" placeholder="(12) 99999-9999" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:border-amber-500 focus:ring-amber-500 bg-gray-50 p-2.5">
+      </label>
+    </div>
+
+    <p id="err" class="text-red-500 text-sm font-medium text-center" role="alert"></p>
+    
+    <button class="w-full bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg mt-4">
+      Confirmar Agendamento
+    </button>
   </form>
-  <div id="done" class="p-5 space-y-3 hidden">
-    <h3 class="text-xl font-bold">✅ Agendamento confirmado!</h3>
-    <p>Você receberá um lembrete no WhatsApp 1 hora antes. Deseja adicionar ao seu Google Agenda?</p>
-    <a id="gcal" target="_blank" rel="noopener" class="block text-center bg-blue-600 text-white font-bold py-2 rounded">Adicionar ao Google Agenda</a>
-    <button id="skip" class="w-full border py-2 rounded">Não, obrigado</button>
+
+  <div id="done" class="p-8 text-center space-y-6 hidden">
+    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    </div>
+    <h3 class="text-2xl font-bold text-gray-900">Agendamento Confirmado!</h3>
+    <p class="text-gray-600">Receberá um lembrete no seu WhatsApp 1 hora antes do corte.</p>
+    <div class="space-y-3 pt-4 border-t border-gray-100">
+      <a id="gcal" target="_blank" rel="noopener" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors">
+        Adicionar ao Google Agenda
+      </a>
+      <button id="skip" class="w-full text-gray-500 hover:text-gray-800 font-semibold py-3 rounded-xl hover:bg-gray-100 transition-colors">
+        Fechar Janela
+      </button>
+    </div>
   </div>
 </dialog>
 
@@ -78,53 +172,118 @@ const ADDR = {{ shop.address|tojson }};
 const q = encodeURIComponent(ADDR);
 let chosen = null;
 
-// Mapa + rota: iOS abre Apple Maps; demais abrem o app de mapas/Google Maps já com a rota a partir da posição atual
 $('#map').src = `https://maps.google.com/maps?q=${q}&output=embed`;
 $('#gps').href = /iPad|iPhone|iPod/.test(navigator.userAgent)
   ? `https://maps.apple.com/?daddr=${q}&dirflg=d`
   : `https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=driving`;
 
 fetch('/api/public').then(r => r.json()).then(d => {
-  $('#barbers').innerHTML = d.barbers.map(b => `<article class="bg-white rounded-lg shadow p-6 text-center">
-    <div class="w-24 h-24 mx-auto rounded-full bg-gray-800 text-white text-3xl flex items-center justify-center mb-3">${esc(b.name.split(' ').map(x=>x[0]).slice(0,2).join(''))}</div>
-    <h3 class="font-bold">${esc(b.name)}</h3><p class="text-gray-500">${esc(b.role||'')}</p></article>`).join('');
-  $('#services').innerHTML = d.services.map(s => `<article class="border rounded-lg p-5">
-    <h3 class="font-bold">${esc(s.name)}</h3><p class="text-sm text-gray-500 mb-2">${esc(s.description||'')}</p>
-    <p class="font-bold text-amber-600">${brl(s.price)}</p><p class="text-sm">⏱ ${s.minutes} min</p></article>`).join('');
-  $('#products').innerHTML = d.products.map(p => `<article class="bg-white rounded-lg shadow p-5">
-    <h3 class="font-bold">${esc(p.name)}</h3><p class="text-amber-600 font-bold">${brl(p.price)}</p>
-    <p class="text-sm ${p.stock>0?'text-green-700':'text-red-600'}">${p.stock>0?'Disponível':'Esgotado'}</p></article>`).join('');
-  $('#fb').innerHTML = d.barbers.map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join('');
-  $('#fs').innerHTML = d.services.map(s => `<option value="${s.id}">${esc(s.name)} – ${brl(s.price)} (${s.minutes} min)</option>`).join('');
+  // Cartões de Barbeiros modernizados
+  $('#barbers').innerHTML = d.barbers.map(b => `
+    <article class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 p-8 text-center border border-gray-100 group">
+      <div class="w-28 h-28 mx-auto rounded-full bg-gray-100 border-4 border-white shadow-md text-gray-800 font-extrabold text-3xl flex items-center justify-center mb-5 group-hover:bg-amber-100 transition-colors">
+        ${esc(b.name.split(' ').map(x=>x[0]).slice(0,2).join(''))}
+      </div>
+      <h3 class="text-xl font-bold text-gray-900">${esc(b.name)}</h3>
+      <p class="text-amber-600 font-medium text-sm mt-1">${esc(b.role||'')}</p>
+    </article>`).join('');
+  
+  // Cartões de Serviços modernizados
+  $('#services').innerHTML = d.services.map(s => `
+    <article class="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-amber-300 transition-colors group">
+      <h3 class="text-lg font-bold text-gray-900">${esc(s.name)}</h3>
+      <p class="text-sm text-gray-500 mt-2 mb-4 h-10 overflow-hidden">${esc(s.description||'')}</p>
+      <div class="flex justify-between items-end">
+        <p class="font-black text-2xl text-gray-900">${brl(s.price)}</p>
+        <span class="text-xs font-semibold bg-gray-200 text-gray-600 px-2 py-1 rounded-md group-hover:bg-amber-100 group-hover:text-amber-800 transition-colors">⏱ ${s.minutes} min</span>
+      </div>
+    </article>`).join('');
+  
+  // Cartões de Produtos modernizados
+  $('#products').innerHTML = d.products.map(p => `
+    <article class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 p-6 flex flex-col justify-between border border-gray-100">
+      <div>
+        <h3 class="text-lg font-bold text-gray-900">${esc(p.name)}</h3>
+        <p class="text-2xl font-black text-amber-500 mt-2">${brl(p.price)}</p>
+      </div>
+      <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+        <span class="text-sm font-semibold ${p.stock>0?'text-green-600':'text-red-500'} flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full ${p.stock>0?'bg-green-600':'bg-red-500'}"></span>
+          ${p.stock>0?'Disponível':'Esgotado'}
+        </span>
+      </div>
+    </article>`).join('');
+  
+  $('#fb').innerHTML = '<option value="" disabled selected>Selecione...</option>' + d.barbers.map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join('');
+  $('#fs').innerHTML = '<option value="" disabled selected>Selecione...</option>' + d.services.map(s => `<option value="${s.id}">${esc(s.name)} – ${brl(s.price)} (${s.minutes} min)</option>`).join('');
 });
 
 async function loadSlots() {
   chosen = null; const box = $('#slots'); box.innerHTML = '';
-  if (!$('#fd').value) return;
+  if (!$('#fd').value || !$('#fb').value \vert{}\vert{} !$('#fs').value) return; // Aguarda os 3 campos
+  
+  // Adiciona um loader visual
+  box.innerHTML = '<p class="col-span-4 text-sm text-gray-400 text-center py-2">Procurando horários...</p>';
+  
   const r = await fetch(`/api/slots?barber=${$('#fb').value}&service=${$('#fs').value}&date=${$('#fd').value}`);
   const list = await r.json();
-  box.innerHTML = list.length ? list.map(t => `<button type="button" role="radio" aria-checked="false" data-t="${t}" class="border rounded py-1 text-sm">${t}</button>`).join('')
-    : '<p class="col-span-4 text-sm text-gray-500">Sem horários livres neste dia.</p>';
+  
+  box.innerHTML = list.length ? list.map(t => `
+    <button type="button" role="radio" aria-checked="false" data-t="${t}" class="border border-gray-300 bg-white text-gray-700 font-medium rounded-lg py-2 text-sm hover:border-amber-500 transition-colors focus:outline-none">
+      ${t}
+    </button>`).join('')
+    : '<p class="col-span-4 text-sm font-semibold text-red-500 bg-red-50 py-2 text-center rounded-lg">Horários esgotados neste dia.</p>';
 }
+
 $('#slots').addEventListener('click', e => {
   const b = e.target.closest('button[data-t]'); if (!b) return;
   chosen = b.dataset.t;
-  document.querySelectorAll('#slots button').forEach(x => { const on = x === b; x.setAttribute('aria-checked', on); x.classList.toggle('bg-gray-900', on); x.classList.toggle('text-white', on); });
+  document.querySelectorAll('#slots button').forEach(x => { 
+    const on = x === b; 
+    x.setAttribute('aria-checked', on); 
+    // Classes de estado ativo (Selecionado)
+    x.className = on 
+      ? "border-2 border-amber-500 bg-amber-50 text-amber-700 font-bold rounded-lg py-2 text-sm focus:outline-none" 
+      : "border border-gray-300 bg-white text-gray-700 font-medium rounded-lg py-2 text-sm hover:border-amber-500 transition-colors focus:outline-none"; 
+  });
 });
+
 ['#fb','#fs','#fd'].forEach(s => $(s).addEventListener('change', loadSlots));
+
 document.querySelectorAll('[data-open-booking]').forEach(b => b.addEventListener('click', () => {
   $('#form').classList.remove('hidden'); $('#done').classList.add('hidden');
-  const t = new Date(); $('#fd').min = $('#fd').value = t.toLocaleDateString('en-CA'); loadSlots(); $('#dlg').showModal();
+  const t = new Date(); $('#fd').min = $('#fd').value = t.toLocaleDateString('en-CA'); 
+  $('#dlg').showModal();
 }));
-$('#close').onclick = $('#skip').onclick = () => $('#dlg').close();
-$('#form').addEventListener('submit', async e => {
-  e.preventDefault(); $('#err').textContent = '';
-  if (!chosen) { $('#err').textContent = 'Escolha um horário.'; return; }
+
+$('#close').onclick = $('#skip').onclick = () => { 
+  $('#dlg').close(); 
+  $('#form').reset();
+  $('#slots').innerHTML = '';
+  chosen = null;
+};
+
+$('#form').addEventListener('submit', async e => {   e.preventDefault(); $('#err').textContent = '';
+  if (!chosen) { $('#err').textContent = 'Por favor, selecione um horário.'; return; }
+  
+  // Muda o texto do botão para indicar carregamento
+  const btn = e.target.querySelector('button[type="submit"]');
+  const originalText = btn.textContent;
+  btn.textContent = 'A processar...';
+  btn.disabled = true;
+
   const r = await fetch('/api/appointments', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
     barber:$('#fb').value, service:$('#fs').value, date:$('#fd').value, time:chosen, name:$('#fn').value, phone:$('#fp').value})});
   const j = await r.json();
+  
+  btn.textContent = originalText;
+  btn.disabled = false;
+
   if (!r.ok) { $('#err').textContent = j.error || 'Erro ao agendar.'; loadSlots(); return; }
-  $('#gcal').href = j.google_link; $('#form').classList.add('hidden'); $('#done').classList.remove('hidden');
+  
+  $('#gcal').href = j.google_link; 
+  $('#form').classList.add('hidden'); 
+  $('#done').classList.remove('hidden');
 });
 </script>
 </body>
