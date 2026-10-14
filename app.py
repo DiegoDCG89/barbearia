@@ -7,9 +7,7 @@ from zoneinfo import ZoneInfo
 
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
-import BackgroundScheduler
-from flask 
-import Flask, Response, g, jsonify, render_template, request
+from flask import Flask, Response, g, jsonify, render_template, request
 
 log = logging.getLogger("barbearia")
 logging.basicConfig(level=logging.INFO)
